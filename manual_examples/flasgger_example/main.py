@@ -20,22 +20,22 @@ def info(about):
     This is using docstrings for specifications.
     ---
     parameters:
-    - name: about
-    in: path
-    type: string
-    enum: ['all','version', 'author', 'year']
-    required: true
-    default: all
+        name: about
+        in: path
+        type: string
+        enum: ['all','version', 'author', 'year']
+        required: true
+        default: all
     definitions:
-    About:
-    type: string
+        About:
+            type: string
     responses:
-    200:
-    description: A string
-    schema:
-    $ref: '#/definitions/About'
-    examples:
-    version: '1.0'
+        200:
+            description: A string
+            schema:
+                $ref: '#/definitions/About'
+            examples:
+                version: '1.0'
     """
     all_info = {
         'all': 'main_author 1.0 2020',
