@@ -1,0 +1,10 @@
+# !python 3.9
+
+# flaskgger_example
+flask
+flasgger
+
+# flask_restplus_example
+flask
+flask_restplus
+Werkzeug==0.16.1
