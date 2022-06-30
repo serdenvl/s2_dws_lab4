@@ -80,34 +80,21 @@ def add_human(name: str, human: Human) -> Human:
 
 
 @app.put("/human/{name}")
-def replace_human(name: str, human: Human) -> Human:
+def update_human(name: str, human: Human) -> Human:
     human.name = name
     if name not in humans:
-        raise HTTPException(status_code=400, detail='there is no human with that name')
+        raise HTTPException(status_code=404, detail='there is no human with that name')
     humans[name] = human
     return human
 
 
 @app.patch("/human/{name}")
-def update_human(name: str, field: AnyFields, new_value: str) -> Human:
-    if field != StrFields.name:
-        if name not in humans:
-            raise HTTPException(status_code=400, detail='there is no human with that name')
-    else:
-        if new_value in humans:
-            raise HTTPException(status_code=400, detail='there is already a human with that name')
-        humans[new_value] = humans[name]
-        name = new_value
-
-    print(type(field))
-    if field.name in IntFields.names():
-        try:
-            new_value = int(new_value)
-        except ValueError:
-            raise HTTPException(status_code=400, detail='wrong type of value')
-
-    setattr(humans[name], field.name, new_value)
-    return humans[name]
+def reward_human(name: str, medals_number: int) -> Human:
+    if name not in humans:
+        raise HTTPException(status_code=404, detail='there is no human with that name')
+    human: Human = humans[name]
+    human.medals += medals_number
+    return human
 
 
 @app.delete("/delete/{name}")
