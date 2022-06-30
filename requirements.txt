@@ -1,3 +1,4 @@
 fastapi
 
+#pip install fastapi
 #pip install "uvicorn[standart]"

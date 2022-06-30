@@ -5,8 +5,6 @@ from enum import Enum
 from typing import Any
 from dataclasses import dataclass
 
-app = FastAPI()
-
 
 class NEnum(Enum):
     @staticmethod
@@ -49,12 +47,18 @@ humans = {
 }
 
 
+app = FastAPI()
+
+
 @app.get("/all")
 def all_humans() -> list[Human]:
+    """
+    Returns all humans
+    """
     return list(humans.values())
 
 
-@app.post("/add", status_code=201, response_model=Human)
+@app.post("/add", status_code=201)
 def add_human(human: Human) -> Human:
     if human.name in humans:
         raise HTTPException(status_code=400, detail='the name is already in use')
