@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint
-import flask.scaffold
-flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
+#import flask.scaffold
+#flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func
 from flask_restplus import Api, Resource
 app = Flask(__name__)
 api = Api(app = app)
