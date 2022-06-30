@@ -1,3 +1,4 @@
+import pydantic
 from fastapi import FastAPI, HTTPException
 
 import random
@@ -11,14 +12,17 @@ class NEnum(Enum):
     def _generate_next_value_(name: str, start: int, count: int, last_values: list[Any]) -> Any:
         return name
 
+    @classmethod
+    def names(cls):
+        return {a.name for a in cls}
+
 
 StrFields = NEnum('StrFields', 'name country category')
 IntFields = NEnum('IntFields', 'points medals')
 AnyFields = NEnum('AnyFields', 'name country category points medals')
 
 
-@dataclass
-class Human:
+class Human(pydantic.BaseModel):
     name: str
     country: str
     category: str
@@ -58,27 +62,45 @@ def all_humans() -> list[Human]:
     return list(humans.values())
 
 
-@app.post("/add", status_code=201)
-def add_human(human: Human) -> Human:
-    if human.name in humans:
-        raise HTTPException(status_code=400, detail='the name is already in use')
-    humans[human.name] = human
+@app.get("/human/{name}")
+def get_human(name: str) -> Human:
+    try:
+        return humans[name]
+    except KeyError:
+        raise HTTPException(status_code=404, detail='there is no human with that name')
+
+
+@app.post("/human/{name}", status_code=201)
+def add_human(name: str, human: Human) -> Human:
+    human.name = name
+    if name in humans:
+        raise HTTPException(status_code=400, detail='there is already a human with that name')
+    humans[name] = human
     return human
 
 
-@app.post("/update")
+@app.put("/human/{name}")
+def replace_human(name: str, human: Human) -> Human:
+    human.name = name
+    if name not in humans:
+        raise HTTPException(status_code=400, detail='there is no human with that name')
+    humans[name] = human
+    return human
+
+
+@app.patch("/human/{name}")
 def update_human(name: str, field: AnyFields, new_value: str) -> Human:
     if field != StrFields.name:
         if name not in humans:
-            raise HTTPException(status_code=400, detail='the name not in use')
+            raise HTTPException(status_code=400, detail='there is no human with that name')
     else:
         if new_value in humans:
-            raise HTTPException(status_code=400, detail='the name is already in use')
+            raise HTTPException(status_code=400, detail='there is already a human with that name')
         humans[new_value] = humans[name]
         name = new_value
 
     print(type(field))
-    if field.name in IntFields:
+    if field.name in IntFields.names():
         try:
             new_value = int(new_value)
         except ValueError:
@@ -88,13 +110,13 @@ def update_human(name: str, field: AnyFields, new_value: str) -> Human:
     return humans[name]
 
 
-@app.post("/delete")
+@app.delete("/delete/{name}")
 def delete_human(name: str) -> Human:
     try:
         human = humans[name]
         del humans[name]
     except KeyError:
-        raise HTTPException(status_code=404, detail='the name not in use')
+        raise HTTPException(status_code=404, detail='there is no human with that name')
 
     return human
 
