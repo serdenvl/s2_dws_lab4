@@ -3,7 +3,7 @@ from flask import Flask, jsonify, Blueprint
 # Подключение библиотеки для создания автоматической документации API
 from flasgger import Swagger
 # Подключение части нашего веб-сервиса с использованием Blueprint
-from sitepart.sitepart import sitepart
+from sitepart import sitepart
 
 # Приложение Flask
 app = Flask(__name__)
@@ -50,6 +50,6 @@ def info(about):
 # Регистрируем основной Blueprint и Blueprint другой части сайта
 app.register_blueprint(main, url_prefix='/')
 # url_prefix указывает URL в контексте которого будет доступна часть данного Blueprint
-app.register_blueprint(sitepart, url_prefix='/sitepart')
+app.register_blueprint(sitepart.sitepart, url_prefix='/sitepart')
 # Запуск приложения Flask в режиме debug
 app.run(debug=True)
